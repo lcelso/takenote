@@ -55,6 +55,27 @@ const NoteList: React.FC = () => {
     event.dataTransfer.setData('text/plain', noteId)
   }
 
+  let [elementHeight] = useState(0)
+  let [elNoteList] = useState(0)
+  let [elementWidth] = useState(0)
+  let [isChangeCss] = useState(false)
+
+  if (elementHeight === 0) {
+    const elementNoteSidebar = document.querySelector('.note-sidebar')
+    const elementNoteList = document.querySelector('.note-list')
+
+    if (elementNoteSidebar && elementNoteList) {
+      elementHeight = Number(elementNoteSidebar.clientHeight)
+      elNoteList = Number(elementNoteList.clientHeight)
+      elementWidth = Number(elementNoteSidebar.clientWidth)
+
+      if (elNoteList >= elementHeight) {
+        isChangeCss = true
+      } else {
+        isChangeCss = false
+      }
+    }
+  }
   useEffect(() => {
     document.addEventListener('mousedown', handleNoteOptionsClick)
     return () => {
@@ -64,7 +85,14 @@ const NoteList: React.FC = () => {
 
   return (
     <aside className="note-sidebar">
-      <div className="note-sidebar-header">
+      <div
+        style={{
+          position: isChangeCss ? 'fixed' : 'initial',
+          zIndex: isChangeCss ? 2 : 'initial',
+          width: isChangeCss ? `${elementWidth}px` : 'auto',
+        }}
+        className="note-sidebar-header"
+      >
         <input
           type="search"
           onChange={event => {
@@ -74,7 +102,12 @@ const NoteList: React.FC = () => {
           placeholder="Search for notes"
         />
       </div>
-      <div className="note-list">
+      <div
+        style={{
+          paddingTop: isChangeCss ? '60px' : '0',
+        }}
+        className="note-list"
+      >
         {filteredNotes.map(note => {
           const noteTitle = getNoteTitle(note.text)
 
